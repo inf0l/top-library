@@ -90,11 +90,19 @@ container.appendChild(inputFields);
 for (item in myLibrary) {
   const book = document.createElement("div");
   book.className = "card";
-  book.id = myLibrary[item].title;
-  book.innerHTML = `<h4>${book.id}</h4>
+  book.id = `book${item}`;
+  book.innerHTML = `<div style="height: 2rem; display: flex; justify-content: space-between;"><h4>${myLibrary[item].title}</h4><input type="image" id="delButton${book.id}" src="../images/SeekPng.com_cross-png-transparent_601052.png" style="width: 1rem; height: 1rem;"></div>
 	<p>by <em>${myLibrary[item].author}</em></p>
 <p>${myLibrary[item].pages} pages</p>
 	<p>...${myLibrary[item].read}</p>
 		`;
   cards.appendChild(book);
+  const delButton = document
+    .getElementById(`delButton${book.id}`)
+    .addEventListener("click", () => {
+      myLibrary.splice(book.id, 1);
+      const remove = document.getElementById(book.id);
+      cards.removeChild(remove);
+      console.table(myLibrary);
+    });
 }
