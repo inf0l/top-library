@@ -22,7 +22,7 @@ addBookToLibrary(theHobbit);
 addBookToLibrary(theAlchemist);
 addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
 addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
-addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
+addBookToLibrary(new Book("Inferno", "Dante", 666, "Read"));
 addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
 addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
 addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
@@ -71,6 +71,24 @@ background: repeating-linear-gradient(#fff, #fff 22%, #d9eaf3 23%, #d9eaf3 24%) 
 .card:hover {
 box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
 }
+
+.cardImages {
+height: 2rem; 
+display: flex; 
+flex-direction: row;
+justify-content: space-between;
+}
+
+.images {
+padding: 0;
+width: 1.2rem;
+height: 1.2rem;
+opacity: 0.3;
+}
+
+.images:hover {
+opacity: 1;
+}
 `;
 
 html.appendChild(style);
@@ -87,22 +105,51 @@ inputFields.id = "inputFields";
 inputFields.style.gridArea = "input";
 container.appendChild(inputFields);
 
+const status = (item) => myLibrary[item].read;
+
 for (item in myLibrary) {
   const book = document.createElement("div");
   book.className = "card";
-  book.id = `book${item}`;
-  book.innerHTML = `<div style="height: 2rem; display: flex; justify-content: space-between;"><h4>${myLibrary[item].title}</h4><input type="image" id="delButton${book.id}" src="../images/SeekPng.com_cross-png-transparent_601052.png" style="width: 1rem; height: 1rem;"></div>
+  book.id = `Book${item}`;
+  book.innerHTML = `<div class="cardImages"><h4>${
+    myLibrary[item].title
+  }</h4><input type="image" id="delButton${
+    book.id
+  }" src="../images/SeekPng.com_cross-png-transparent_601052.png" class="images"></div>
 	<p>by <em>${myLibrary[item].author}</em></p>
 <p>${myLibrary[item].pages} pages</p>
-	<p>...${myLibrary[item].read}</p>
+	<div class="cardImages"><p>...${status(
+    item
+  )}</p><input type="image" id="checkButton${
+    book.id
+  }" src="../images/565-5650947_green-check-mark-clip-art.png" class="images" style="align-self: flex-end;"></div>
 		`;
   cards.appendChild(book);
   const delButton = document
     .getElementById(`delButton${book.id}`)
     .addEventListener("click", () => {
       myLibrary.splice(book.id, 1);
-      const remove = document.getElementById(book.id);
-      cards.removeChild(remove);
-      console.table(myLibrary);
+      const card = document.getElementById(book.id);
+      cards.removeChild(card);
     });
+  const checkButton = document.getElementById(`checkButton${book.id}`);
+  checkButton.addEventListener("click", () => {
+    const index = book.id.slice(4);
+    const card = document.getElementById(book.id);
+    const nextCard = document.getElementById(`Book${Number(index) + 1}`);
+    if (status(index) != "Read") {
+      myLibrary[index].read = "Read";
+      checkButton.style.opacity = "1";
+      console.log(myLibrary[index].read);
+    } else {
+      myLibrary[index].read = "not read yet";
+      checkButton.style.opacity = "0.3";
+      console.log(myLibrary[index].read);
+    }
+    cards.removeChild(card);
+    cards.insertBefore(card, nextCard);
+  });
+  if (myLibrary[item].read == "Read") {
+    checkButton.style.opacity = "1";
+  }
 }
