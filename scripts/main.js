@@ -1,4 +1,5 @@
-let myLibrary = [];
+let myLibrary = localStorage.getItem("readingList");
+myLibrary = JSON.parse(myLibrary);
 
 function Book(title, author, pages, read) {
   this.title = title;
@@ -13,32 +14,18 @@ Book.prototype.info = function () {
 
 function addBookToLibrary(book) {
   myLibrary.push(new Book(book.title, book.author, book.pages, book.read));
+  localStorage.setItem("readingList", JSON.stringify(myLibrary));
 }
-
-const theHobbit = new Book("The Hobbit", "J.R.R. Tolkien", 295, "not read yet");
-const theAlchemist = new Book("The Alchemist", "Pablo Cueho", 164, "finished");
-
-addBookToLibrary(theHobbit);
-addBookToLibrary(theAlchemist);
-addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
-addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
-addBookToLibrary(new Book("Inferno", "Dante", 666, "Read"));
-addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
-addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
-addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
-addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
-addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
-addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
-addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
-addBookToLibrary(new Book("Inferno", "Dante", 666, "not read yet"));
 
 const html = document.querySelector("html");
 const style = document.createElement("style");
 
 style.innerHTML = `
+
 html {
 background: #eee;
 }
+
 #container {
 display: grid;
 grid-template-areas: 
@@ -48,13 +35,12 @@ grid-template-areas:
 }
 
 #cards {
-display: grid;
-grid-auto-flow: row;
-grid-template-columns: repeat(3, 1fr);
-max-height: 800px;
+display: flex;
+flex-wrap: wrap;
+max-height: 100vmin;
 overflow-x: auto;
-
 }
+
 .card {
 display: block;
 box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
@@ -63,9 +49,8 @@ border-radius: 7px;
 padding: 5px;
 margin: 10px;
 font-family: "Courier New", monospace;
-max-width: 300px;
+width: 30ch;
 background: repeating-linear-gradient(#fff, #fff 22%, #d9eaf3 23%, #d9eaf3 24%) 0 4px;
-
 }
 
 .card:hover {
@@ -97,7 +82,6 @@ font-size: 1em;
 margin: 0 0 0.5em 0;
 width: 100%;
 background: rgba(0,0,0,0);
-
 }
 `;
 
@@ -111,33 +95,6 @@ cards.style.gridArea = "cards";
 container.appendChild(cards);
 
 const status = (item) => myLibrary[item].read;
-
-//function updateCard(id, item) {
-//const book = document.getElementById(id);
-//cards.removeChild(book);
-//const nextCard = document.getElementById(`Book${Number(item) + 1}`);
-//book.innerHTML = `<div class="cardImages"><h4>${
-//myLibrary[item].title
-//}</h4><input type="image" id="delButton${
-//book.id
-//}" src="../images/SeekPng.com_cross-png-transparent_601052.png" class="images"></div>
-//<p>by <em>${myLibrary[item].author}</em></p>
-//<p>${myLibrary[item].pages} pages</p>
-//<div class="cardImages"><p>...${status(
-//item
-//)}</p><input type="image" id="checkButton${
-//book.id
-//}" src="../images/565-5650947_green-check-mark-clip-art.png" class="images" style="opacity: 1; align-self: flex-end;"></div>
-//`;
-//cards.insertBefore(book, nextCard);
-//}
-
-const enterNewBook = () => {
-  const book = document.createElement("div");
-  book.className = "card";
-  book.innerHTML = `<form action="addNew" id="new"><input type="text" style="margin-top: 1em; font-weight: bold;"class="input" value="title" id="title" required><input type="text" class="input" value="author" id="author" required><input type="text" style="margin-top: 0.5em;"class="input" value="pages" id="pages" required><div style="display: flex; flex-direction: row; justify-content: space-between;" required><input type="text" style="margin-top: 1.2em; margin-bottom: 0; width: 60%;" class="input" value="read" id="read" required><input type="submit" id="submit" value="Submit" style="background: rgba(1,1,0,0.15); border: 0; height: 2.6em; align-self: flex-end; font-family: 'Courier New', monospace;"></div></form>`;
-  cards.appendChild(book);
-};
 
 const createCard = (item) => {
   const book = document.createElement("div");
@@ -157,27 +114,27 @@ const createCard = (item) => {
   }" src="../images/565-5650947_green-check-mark-clip-art.png" class="images" style="align-self: flex-end;"></div>
 		`;
   cards.appendChild(book);
+  const index = book.id.slice(4);
   const delButton = document
     .getElementById(`delButton${book.id}`)
     .addEventListener("click", () => {
-      myLibrary.splice(book.id, 1);
-      updateCards();
+      myLibrary.splice(index, 1);
+      localStorage.setItem("readingList", JSON.stringify(myLibrary));
+      createCards();
     });
   const checkButton = document.getElementById(`checkButton${book.id}`);
   checkButton.addEventListener("click", () => {
-    console.table(myLibrary);
     const card = document.getElementById(book.id);
-    const index = book.id.slice(4);
     switch (myLibrary[index].read == "Read") {
       case true:
         myLibrary[index].read = "not read yet";
-        cards.removeChild(card);
-        createCard(index);
+        localStorage.setItem("readingList", JSON.stringify(myLibrary));
+        createCards();
         break;
       case false:
         myLibrary[index].read = "Read";
-        cards.removeChild(card);
-        createCard(index);
+        localStorage.setItem("readingList", JSON.stringify(myLibrary));
+        createCards();
         break;
     }
   });
@@ -186,26 +143,34 @@ const createCard = (item) => {
   }
 };
 
-const newBook = document.getElementsByName("addNew");
-console.log(newBook.elements);
-newBook.addEventListener("submit", () => {
-  let title = document.getElementById(title);
-  let author = document.getElementById(author);
-  let pages = document.getElementById(pages);
-  let read = document.getElementById(read);
+const enterNewBook = () => {
+  const book = document.createElement("div");
+  book.className = "card";
+  book.innerHTML = `<form id="newBookForm"><input type="text" autofocus="autofocus" onFocus="this.select()" style="margin-top: 1em; font-weight: bold;"class="input" value="Add new book" id="newTitle" required><input type="text" class="input" value="author" id="newAuthor" required><input type="text" style="margin-top: 0.5em;"class="input" value="# of pages" id="newPages" required><div style="display: flex; flex-direction: row; justify-content: space-between;" required><input type="text" style="margin-top: 1.2em; margin-bottom: 0; width: 60%;" class="input" value="read?" id="newRead" required><input type="image" class="images" style="align-self: flex-end" id="submit" value="Submit" src="../images/565-5650947_green-check-mark-clip-art.png"></div></form>`;
+  cards.appendChild(book);
+  const newBook = document
+    .getElementById("newBookForm")
+    .addEventListener("submit", () => {
+      let title = document.getElementById("newTitle");
+      let author = document.getElementById("newAuthor");
+      let pages = document.getElementById("newPages");
+      let read = document.getElementById("newRead");
 
-  addBookToLibrary(new Book(title, author, pages, read));
-});
+      addBookToLibrary(
+        new Book(title.value, author.value, pages.value, read.value)
+      );
+      createCards();
+    });
+};
 
 const createCards = () => {
+  while (cards.firstChild) {
+    cards.removeChild(cards.lastChild);
+  }
   enterNewBook();
   for (item in myLibrary) {
     createCard(item);
   }
-};
-
-const updateCards = () => {
-  location.reload();
 };
 
 createCards();
