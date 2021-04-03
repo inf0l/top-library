@@ -1,5 +1,8 @@
-let myLibrary = localStorage.getItem("readingList");
-myLibrary = JSON.parse(myLibrary);
+let myLibrary = [];
+if (localStorage.getItem("readingList")) {
+  myLibrary = localStorage.getItem("readingList");
+  myLibrary = JSON.parse(myLibrary);
+}
 
 function Book(title, author, pages, read) {
   this.title = title;
